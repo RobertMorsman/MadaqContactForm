@@ -1,0 +1,44 @@
+[
+  {
+    "keywords": ["yuzu caramel", "yuzu", "yuzu karamel", "yuzu-caramel"],
+    "image_url": "https://cdn.shopify.com/s/files/1/0729/8203/6780/files/Madak_yuzu_caramel_04d2bbd8-5ff9-47b6-8c58-9658179651a8.png?v=1688635076",
+    "label": "Yuzu Caramel",
+    "priority": 100
+  },
+  {
+    "keywords": ["moroccan coffee", "marokkaanse koffie", "morocco coffee", "morrocan", "mocha", "coffee", "koffie"],
+    "image_url": "https://cdn.shopify.com/s/files/1/0729/8203/6780/files/bonbon2.png?v=1684836536",
+    "label": "Moroccan Coffee",
+    "priority": 95
+  },
+  {
+    "keywords": ["amandel", "almond"],
+    "image_url": "https://cdn.shopify.com/s/files/1/0729/8203/6780/files/bonbon1.png?v=1684836531",
+    "label": "Almond",
+    "priority": 90
+  },
+  {
+    "keywords": ["pistachio", "pistache", "pista", "pistacia", "passionfruit", "passion"],
+    "image_url": "https://cdn.shopify.com/s/files/1/0729/8203/6780/files/bonbon5.png?v=1684836531",
+    "label": "Pistachio",
+    "priority": 85
+  },
+  {
+    "keywords": ["pecan"],
+    "image_url": "https://cdn.shopify.com/s/files/1/0729/8203/6780/files/Pecan_bonbon_mail_handtekening.png?v=1704981403",
+    "label": "Pecan",
+    "priority": 80
+  },
+  {
+    "keywords": ["sea salt caramel", "sea salt", "zout karamel", "zoute karamel", "salted caramel", "salt", "black salt"],
+    "image_url": "https://cdn.shopify.com/s/files/1/0729/8203/6780/files/bonbon3.png?v=1684836531",
+    "label": "Black Salt Caramel",
+    "priority": 75
+  },
+  {
+    "keywords": ["Coconut", "apricot"],
+    "image_url": "https://cdn.shopify.com/s/files/1/0729/8203/6780/files/KamilleKave_coconut.jpg?v=1729439443",
+    "label": "Matcha",
+    "priority": 70
+  }
+]
