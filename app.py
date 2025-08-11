@@ -1,5 +1,6 @@
 import streamlit as st
 import re, html, unicodedata
+import json, unicodedata
 from typing import Tuple, Dict
 
 # ---------- Pagina & stijl ----------
@@ -104,6 +105,43 @@ def generate_company_email(first_name: str, last_name: str) -> str:
     first_letter = first[0].lower()
     clean_last = re.sub(r'[^\w]', '', last).lower()
     return f"{first_letter}.{clean_last}@madaq.com"
+
+# Default thumbnail (als niets matcht)
+DEFAULT_THUMB = {
+    "image_url": "https://cdn.shopify.com/s/files/1/0729/8203/6780/files/bonbon3.png?v=1684836531",
+    "label": "Madaq Bonbon"
+}
+
+def _norm(s: str) -> str:
+    s = s or ""
+    s = s.strip().lower()
+    s = "".join(c for c in unicodedata.normalize('NFKD', s) if not unicodedata.combining(c))
+    return s
+
+def load_thumb_rules_from_file(path: str = "thumbnails.json"):
+    """Laad regels uit JSON-bestand in de repo; geef [] terug als niet gevonden/ongeldig."""
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+            # sanity check
+            if isinstance(data, list):
+                return data
+    except Exception:
+        pass
+    return []
+
+def pick_thumbnail(user_text: str, rules, default=DEFAULT_THUMB):
+    """Kies eerste match met hoogste priority (bevat-zoekwoord, accent/case-insensitive)."""
+    t = _norm(user_text)
+    best = None
+    for rule in sorted(rules, key=lambda r: r.get("priority", 0), reverse=True):
+        for kw in rule.get("keywords", []):
+            if _norm(kw) in t:
+                best = rule
+                break
+        if best:
+            break
+    return best or default
 
 # ---------- Parser voor het aangeleverde tekstformaat ----------
 FIELD_MAP = {
