@@ -18,13 +18,13 @@
     "priority": 90
   },
   {
-    "keywords": ["pistachio", "pistache", "pista", "pistacia", "passionfruit", "passion"],
+    "keywords": ["pistachio", "pistache", "pista", "pistacia", "passionfruit", "passion", "lychee", "rose", "raspberry"],
     "image_url": "https://cdn.shopify.com/s/files/1/0729/8203/6780/files/bonbon5.png?v=1684836531",
     "label": "Pistachio",
     "priority": 85
   },
   {
-    "keywords": ["pecan"],
+    "keywords": ["pecan", "madagascan", "vanilla"],
     "image_url": "https://cdn.shopify.com/s/files/1/0729/8203/6780/files/Pecan_bonbon_mail_handtekening.png?v=1704981403",
     "label": "Pecan",
     "priority": 80
