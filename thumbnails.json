@@ -38,7 +38,19 @@
   {
     "keywords": ["Coconut", "apricot"],
     "image_url": "https://cdn.shopify.com/s/files/1/0729/8203/6780/files/KamilleKave_coconut.jpg?v=1729439443",
-    "label": "Matcha",
+    "label": "Coconut % Apricot",
     "priority": 70
+  }
+{
+    "keywords": ["Piedmont", "Hazelnut"],
+    "image_url": "https://cdn.shopify.com/s/files/1/0729/8203/6780/files/KamilleKave_coconut.jpg?v=1729439443",
+    "label": "Piedmont Hazelnut",
+    "priority": 65
+  }
+{
+    "keywords": ["Mango"],
+    "image_url": "https://cdn.shopify.com/s/files/1/0729/8203/6780/files/mango_chili.png?v=1700059499",
+    "label": "Matcha",
+    "priority": 60
   }
 ]
