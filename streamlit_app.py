@@ -69,8 +69,7 @@ st.markdown("""
 # Header
 st.markdown("""
 <div class="main-header">
-    <h1>🍫 Madaq Contact Information Form</h1>
-    <p>Generate your professional email signature and submit your contact details</p>
+    <h1>🍫 Madaq Signature Generator</h1>
 </div>
 """, unsafe_allow_html=True)
 
@@ -157,34 +156,6 @@ def generate_company_email(first_name: str, last_name: str) -> str:
     clean_last = re.sub(r'[^\w]', '', last).lower()
     
     return f"{first_letter}.{clean_last}@madaq.com"
-
-# ------------------ Configuration ------------------
-@st.cache_resource
-def init_email_config() -> Dict[str, str]:
-    """Initialize email configuration from secrets."""
-    try:
-        cfg = st.secrets.get("email", {})
-        config = {
-            "smtp_server": cfg.get("smtp_server", "smtp.gmail.com"),
-            "smtp_port": int(cfg.get("smtp_port", 587)),
-            "sender_email": cfg.get("sender_email", ""),
-            "sender_password": cfg.get("sender_password", ""),
-            "recipient_email": cfg.get("recipient_email", "r.morsman@madaq.com"),
-        }
-        
-        # Validate required fields
-        required_fields = ["sender_email", "sender_password"]
-        missing_fields = [field for field in required_fields if not config[field]]
-        
-        if missing_fields:
-            st.error(f"Missing email configuration: {', '.join(missing_fields)}")
-            st.info("Please configure these in .streamlit/secrets.toml under [email] section")
-        
-        return config
-    except Exception as e:
-        logger.error(f"Error loading email config: {e}")
-        st.error("Error loading email configuration")
-        return {}
 
 # ------------------ Enhanced HTML Signature ------------------
 def render_signature_html(name: str, surname: str, job_title: str, phone: str, favourite_bonbon: str) -> str:
