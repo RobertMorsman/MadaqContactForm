@@ -3,7 +3,7 @@
     "keywords": ["yuzu caramel", "yuzu", "yuzu karamel", "yuzu-caramel"],
     "image_url": "https://cdn.shopify.com/s/files/1/0729/8203/6780/files/Madak_yuzu_caramel_04d2bbd8-5ff9-47b6-8c58-9658179651a8.png?v=1688635076",
     "label": "Yuzu Caramel",
-    "priority": 100
+    "priority": 99
   },
   {
     "keywords": ["moroccan coffee", "marokkaanse koffie", "morocco coffee", "morrocan", "mocha", "coffee", "koffie"],
@@ -51,6 +51,6 @@
     "keywords": ["Mango"],
     "image_url": "https://cdn.shopify.com/s/files/1/0729/8203/6780/files/mango_chili.png?v=1700059499",
     "label": "Matcha",
-    "priority": 60
+    "priority": 100
   }
 ]
