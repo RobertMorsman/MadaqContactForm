@@ -1,6 +1,6 @@
 import streamlit as st
 import re, html, unicodedata
-from typing import Tuple, Dict, Optional
+from typing import Tuple, Dict
 
 # ---------- Pagina & stijl ----------
 st.set_page_config(
@@ -46,7 +46,7 @@ st.markdown("""
 st.markdown("""
 <div class="main-header">
     <h1>🍫 Madaq Signature Generator</h1>
-    <p>Plak hieronder het “submission”-blok of upload een .txt bestand — je ziet meteen de preview en kunt de HTML downloaden.</p>
+    <p>Plak hieronder het submission‑blok of upload een .txt — je ziet direct de preview en kunt de HTML downloaden.</p>
 </div>
 """, unsafe_allow_html=True)
 
@@ -56,7 +56,7 @@ DUTCH_LANDLINE_RE = re.compile(r'^(\+31|0031|0)[1-9][0-9]{7,8}$')
 PHONE_E164_RE = re.compile(r'^\+?[1-9]\d{7,14}$')
 
 def smart_title(name: str) -> str:
-    """Titelcase met behoud van delen na apostrof/koppelteken (bijv. van-der Meer, D'Angelo)."""
+    """Titelcase met behoud van delen na apostrof/koppelteken (van-der, D'Angelo)."""
     name = name.strip()
     if not name:
         return ""
@@ -118,6 +118,7 @@ FIELD_MAP = {
 def parse_submission(text: str) -> Dict[str, str]:
     """Parseert het blok en geeft dict terug met velden (lege string als niet gevonden)."""
     data = {k: "" for k in FIELD_MAP}
+    # Houd lege regels niet aan, trim en ignore case
     lines = [ln.strip() for ln in text.splitlines() if ln.strip()]
     for key, pattern in FIELD_MAP.items():
         regex = re.compile(pattern, re.IGNORECASE)
@@ -130,21 +131,31 @@ def parse_submission(text: str) -> Dict[str, str]:
 
 # ---------- Signature HTML ----------
 def render_signature_html(first_name: str, last_name: str, job_title: str, phone: str, favourite_bonbon: str) -> str:
+    # Format naam
     full_name = f"{smart_title(first_name)} {smart_title(last_name)}".strip()
     full_name_html = html.escape(full_name)
-    job_title_html = html.escape(job_title.strip())
+
+    # Job title: altijd eerste letter hoofdletter, rest ongewijzigd
+    jt_raw = job_title.strip()
+    job_title_formatted = (jt_raw[:1].upper() + jt_raw[1:]) if jt_raw else ""
+    job_title_html = html.escape(job_title_formatted)
+
+    # Overige velden
     fav_bonbon_html = html.escape(favourite_bonbon.strip())
     phone_text_html = html.escape(phone.strip())
     tel_href = build_tel_link(phone.strip())
     derived_email = generate_company_email(first_name, last_name)
     email_text_html = html.escape(derived_email)
     mailto_href = f"mailto:{derived_email}"
-    fav_title = f"Favoriet van {smart_title(first_name)}" if first_name.strip() else "Favoriet"
+
+    # English favourite label: "Robert's favourite"
+    first_n = smart_title(first_name).strip()
+    fav_title = f"{first_n}'s favourite" if first_n else "Favourite"
     fav_title_html = html.escape(fav_title)
 
     signature_html = f"""
 <div style="font-family: Avenir, Arial, Helvetica, sans-serif;">
-    <p style="font-size: 11pt; margin: 0 0 10px 0;">Met vriendelijke groet,</p>
+    <p style="font-size: 11pt; margin: 0 0 10px 0;">Kind regards,</p>
 
     <table style="width: 800px; font-size: 11pt; font-family: Avenir, Arial, Helvetica, sans-serif;" cellpadding="0" cellspacing="0" border="0">
     <tbody>
@@ -216,7 +227,7 @@ def render_signature_html(first_name: str, last_name: str, job_title: str, phone
                 {fav_title_html}
             </div>
             <div style="color:#412119; font-size: 10pt; line-height: 14pt; margin-bottom: 8px;">
-                {fav_bonbon_html}
+                {html.escape(favourite_bonbon.strip())}
             </div>
             <div style="color:#412119; font-size: 10pt; line-height: 14pt;">
                 What's yours?
@@ -231,9 +242,11 @@ def render_signature_html(first_name: str, last_name: str, job_title: str, phone
 
 # ---------- Invoer (textarea of .txt upload) ----------
 left, right = st.columns([1.1, 1])
+
 with left:
-    st.markdown("### 🧾 Plak of upload het “submission”-blok")
-    uploaded = st.file_uploader("Upload .txt", type=["txt"])
+    st.markdown("### 🧾 Plak of upload het submission‑blok")
+
+    uploaded = st.file_uploader("Upload .txt", type=["txt"], key="uploader", help="Upload het tekstbestand met de submission.")
     default_text = """New contact form submission received:
 
 Date & Time: 2025-08-11 12:46:25
@@ -250,31 +263,38 @@ Favourite bonbon: Yuzu caramel
 Best regards,
 Je digitale maatje
 """
-    if uploaded is not None:
-        raw_text = uploaded.read().decode("utf-8", errors="ignore")
-    else:
-        raw_text = st.text_area("Of plak hier de tekst", value=default_text, height=320)
+    # Textarea staat altijd klaar voor live typen/plakken
+    text_value = st.text_area("Of plak hier de tekst", value=default_text, height=320, key="submission_text")
 
-# Parse elke rerun (live)
+    # Als er een bestand is geüpload, gebruik dat. Anders de textarea.
+    if uploaded is not None:
+        try:
+            raw_text = uploaded.read().decode("utf-8", errors="ignore")
+        except Exception:
+            raw_text = text_value
+    else:
+        raw_text = text_value
+
+# Parse op elke rerun (live)
 parsed = parse_submission(raw_text or "")
 
 # Post-processing/formatting
 first_name = smart_title(parsed.get("name", ""))
 last_name = smart_title(parsed.get("surname", ""))
-job_title = parsed.get("job_title", "").strip()
+
+# Job title: altijd eerste letter hoofdletter, rest ongewijzigd
+job_title_raw = parsed.get("job_title", "").strip()
+job_title = job_title_raw[:1].upper() + job_title_raw[1:] if job_title_raw else ""
+
 phone_in = parsed.get("phone", "").strip()
 fav_bonbon = parsed.get("favourite_bonbon", "").strip()
 
-# Validaties (niet blokkerend voor preview; we tonen alleen hints)
+# lichte validatie-hints (preview blokkeert niet)
 hints = []
-if first_name and len(first_name) < 2:
-    hints.append("Voornaam lijkt erg kort.")
-if last_name and len(last_name) < 2:
-    hints.append("Achternaam lijkt erg kort.")
 if phone_in and not is_valid_phone(phone_in):
     hints.append("Telefoonnummer lijkt niet geldig (NL of internationaal).")
 
-# Signature en download
+# ---------- Live preview & download ----------
 with right:
     st.markdown("### 👀 Live preview")
     sig_html = render_signature_html(first_name, last_name, job_title, phone_in, fav_bonbon)
@@ -291,7 +311,7 @@ with right:
         use_container_width=True
     )
 
-# Info paneel met de uitgelezen waarden
+# Info-paneel met geparseerde data
 st.markdown("### 🔎 Geparseerde gegevens")
 colA, colB = st.columns(2)
 with colA:
@@ -304,8 +324,8 @@ with colB:
     derived_email = generate_company_email(first_name, last_name)
     st.markdown('<div class="kv">', unsafe_allow_html=True)
     st.markdown(f"<b>Telefoon (weergegeven):</b> {phone_in or '—'}", unsafe_allow_html=True)
-    st.markdown(f"<b>Telefoon (tel-link):</b> {build_tel_link(phone_in) if phone_in else '—'}", unsafe_allow_html=True)
-    st.markdown(f"<b>Bedrijfs‑e‑mail (afgeleid):</b> {derived_email or '—'}", unsafe_allow_html=True)
+    st.markdown(f"<b>Tel‑link:</b> {build_tel_link(phone_in) if phone_in else '—'}", unsafe_allow_html=True)
+    st.markdown(f"<b>Bedrijfs‑e‑mail:</b> {derived_email or '—'}", unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
 if hints:
